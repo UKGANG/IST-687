@@ -1,0 +1,265 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+# Utilities
+installLibrary <- function(libraryName) {
+  # Install package if not exists
+  if (!require(libraryName, character.only = TRUE)) {
+    install.packages(pkgs = libraryName);
+    require(libraryName, character.only = TRUE);
+  }
+}
+```
+
+== Preparing Data Mungling functions
+
+```{r}
+installLibrary("logging");
+installLibrary("RCurl");
+installLibrary("tidyverse");
+installLibrary("jsonlite");
+
+basicConfig();
+
+loginfo("Environment setup done. ", logger="");
+# Data mungling
+# Data type conversion index
+doubleColumn <- c("Loyalty"
+        , "Shopping.Amount.at.Airport"
+        , "Eating.and.Drinking.at.Airport"
+        , "olong"
+        , "olat"
+        , "dlong"
+, "dlat");
+integerColumn <- c("Age"
+        , "Year.of.First.Flight"
+        , "Flights.Per.Year"
+        , "Total.Freq.Flyer.Accts"
+        , "Departure.Delay.in.Minutes"
+        , "Arrival.Delay.in.Minutes"
+        , "Flight.time.in.minutes"
+        , "Flight.Distance"
+        , "Likelihood.to.recommend");
+dateColumn <- c("Flight.date");
+stringColumn <- c("freeText"
+        , "Destination.City"
+        , "Origin.City"
+        , "Origin.State"
+        , "Destination.State"
+        , "Partner.Code"
+        , "Partner.Name"
+);
+factorColumn <- c("Gender"
+        , "Price.Sensitivity"
+        , "Airline.Status"
+        , "Type.of.Travel"
+        , "Class"
+        , "Scheduled.Departure.Hour"
+        , "Flight.cancelled"
+        , "Day.of.Month"
+);
+
+convert <- function(dataset, columnNames, func) {
+  classType <- class(select(dataset, columnNames[1]) %>% pull() %>% func());
+  map(columnNames, function(columnName) {
+    dataset[columnName] <- select(dataset, columnName) %>% pull() %>% func();
+  })
+  loginfo(sprintf("Conversion complete on data type %s.", classType), logger="");
+}
+
+# Filling NA values
+naFilter <- function(ds) {
+  columnNames <- colnames(ds);
+  selectedNAColumns <- c();
+  for (columnName in columnNames) {
+    if (length(ds[columnName][is.na(rawData[columnName])]) > 0) {
+      selectedNAColumns <- c(selectedNAColumns, columnName);
+    }
+  }
+
+  return (select(ds, selectedNAColumns));
+}
+
+strategy.meanStrategy <- function(ds) {
+  loginfo("Displace all NAs with mean. ", logger="");
+  tmpDs <- naFilter(ds);
+  for (columnName in colnames(tmpDs)) {
+    if ("freeText" == columnName) {
+      next;
+    }
+    ds[is.na(ds[,columnName]),columnName] <- select(ds, columnName) %>% 
+      pull() %>% 
+      mean(na.rm = T);
+  }
+
+    return (ds);
+}
+
+strategy.modeStrategy <- function(ds) {
+  loginfo("Displace all NAs with mode. ", logger="");
+  ds <- rawData;
+  tmpDs <- naFilter(ds);
+  for (columnName in colnames(tmpDs)) {
+    if ("freeText" == columnName) {
+      next;
+    }
+    ds[is.na(ds[,columnName]),columnName] <- 
+      select(ds, columnName) %>% 
+      na.omit() %>% 
+      table() %>% 
+      as.data.frame() %>% 
+      arrange(desc(Freq)) %>% 
+      slice(1) %>% 
+      pull(); 
+  }
+
+  return (ds);
+}
+
+strategy.medianStrategy <- function(ds) {
+  loginfo("Displace all NAs with median", logger="");
+  tmpDs <- naFilter(ds);
+  for (columnName in colnames(tmpDs)) {
+    if ("freeText" == columnName) {
+      next;
+    }
+    ds[is.na(ds[,columnName]),columnName] <- select(ds, columnName) %>% 
+      pull() %>% 
+      median(na.rm = T);
+  }
+
+  return (ds);
+}
+
+strategy.omitStrategy <- function(ds) {
+  loginfo("Omitting all NAs. ", logger="");
+  return (na.omit(ds));
+}
+
+strategy.winsorizeStrategy <- function(ds) {
+  lowerFencePercentile <- ifelse(exists("strategy.winsorizeStrategy.lowerFencePercentile"), strategy.winsorizeStrategy.lowerFencePercentile, .02);
+  upperFencePercentile <- ifelse(exists("strategy.winsorizeStrategy.upperFencePercentile"), strategy.winsorizeStrategy.upperFencePercentile, .98);
+  loginfo("Winsorize outliers. ", logger="");
+  installLibrary("DescTools");
+  for (i in 1:length(colnames(ds))) {
+    dataType <- class(ds[[i]]);
+    if (!dataType %in% c("integer", "numeric")) {
+      next;
+    }
+    lowerFence <- quantile(ds[[i]], lowerFencePercentile);
+    upperFence <-quantile(ds[[i]], upperFencePercentile);
+    if ("integer" == dataType) {
+      lowerFence <- round(lowerFence);
+      upperFence <- round(upperFence);
+    }
+    loginfo(sprintf("Winsorizing for column: %s", colnames(ds)[i]), logger="");
+    loginfo(sprintf("Lower fence: %.3f, percentile: %.3f", lowerFence, lowerFencePercentile), logger="");
+    loginfo(sprintf("Upper fence: %.3f, percentile: %.3f", upperFence, upperFencePercentile), logger="");
+    ds[i] <- Winsorize(ds[i]
+                       , minval = lowerFence
+                       , maxval = upperFence
+                       , probs = c(lowerFencePercentile, upperFencePercentile)
+                       , na.rm = FALSE, type = 7);
+  }
+
+  return (ds);
+}
+
+na.handler <- function(ds, strategy) {
+  tryCatch({
+    loginfo("Start manipulating values. ", logger="");
+    return (strategy(ds));
+  }, finally = {
+    loginfo("End manipulating values. ", logger="");
+  })
+}
+
+loginfo("Function initialization complete! ", logger="")
+```
+
+Rename variables camel-case naming rule
+``` {r}
+# 1. Read data from dataset
+dsPath = "/Users/ukgang/Desktop/github/IST-687/dataset/fall2019-survey-M04.json";
+rawData <- jsonlite::read_json(path = dsPath, simplifyVector = T);
+loginfo(sprintf("JSON data loaded, row=%d, column=%d. "
+                , dim(rawData)[1], dim(rawData)[2]), logger="");
+
+convert(rawData, doubleColumn, as.numeric);
+convert(rawData, integerColumn, as.integer);
+convert(rawData, dateColumn, function (vec) {
+  as.Date(vec, format="%m/%d/%y");
+});
+convert(rawData, stringColumn, as.character);
+convert(rawData, factorColumn, as.factor);
+loginfo("Data type conversion complete. ", logger="");
+
+strategy.winsorizeStrategy.lowerFencePercentile <- 0.01
+strategy.winsorizeStrategy.upperFencePercentile <- 0.98
+# NA values handling
+rawData <- na.handler(rawData, strategy = strategy.medianStrategy); 
+# Outliers handling
+rawData <- na.handler(rawData, strategy = strategy.winsorizeStrategy);
+
+originColNames <- colnames(rawData);
+rawData <- rawData %>% mutate(
+  # Geographic information
+  Geom.Depature.Airport.Longitude=olong, 
+  Geom.Depature.Airport.Latitude=olat,
+  Geom.Arrival.Airport.Longitude=dlong,
+  Geom.Arrival.Airport.Latitude=dlat,
+  Geom.Depature.State=Origin.State,
+  Geom.Arrival.State=Destination.State,
+  Geom.Depature.City.Label=trimws(str_split(Destination.City, ",")[1], which= "both"),
+  Geom.Depature.City.Abbr=trimws(str_split(Destination.City, ",")[2], which= "both"),
+  Geom.Arrival.City.Label=trimws(str_split(Origin.City, ",")[1], which= "both"),
+  Geom.Arrival.City.Abbr=trimws(str_split(Origin.City, ",")[2], which= "both"),
+
+  # Personal information
+  Person.Age=Age,
+  Person.Gender=Gender,
+  Person.Loyalty=Loyalty,
+  Person.Price.Sensitivity=Price.Sensitivity,
+  Person.First.Flight.Year=Year.of.First.Flight,
+  Person.Flights.Per.Year=Flights.Per.Year,
+  Person.Total.Freq.Flyer.Accts=Total.Freq.Flyer.Accts,
+
+  # Current Flight timing information
+  Flight.Departure.Delay.Minute=Departure.Delay.in.Minutes,
+  Flight.Departure.Scheduled.Hour=Scheduled.Departure.Hour,
+  Flight.Arrival.Delay.Minute=Arrival.Delay.in.Minutes,
+  Flight.Time.Minutes=Flight.time.in.minutes,
+  Flight.Distance=Flight.Distance,
+  Flight.Date=Flight.date,
+  Flight.Cancelled=Flight.cancelled,
+
+  # Cost Related Information
+  Flight.Airport.Shopping.Amount=Shopping.Amount.at.Airport,
+  Flight.Airport.Food.Amount=Eating.and.Drinking.at.Airport,
+  Flight.Airline.Membership.Class=Airline.Status,
+  Flight.Travel.Type=Type.of.Travel,
+  Flight.Cabin.Class=Class,
+
+  # Miscellaneous
+  Flight.Recommend.Likelihood=Likelihood.to.recommend,
+  Flight.freeText=freeText,
+  Flight.Ticket.Partner.Code=Partner.Code,
+  Flight.Ticket.Partner.Name=Partner.Name
+  );
+rawData <- select(rawData, -originColNames)
+loginfo("Data renaming complete. ", logger="");
+
+loginfo("Data wrangling finished! ", logger="");
+```
+``` {r}
+#View(rawData)
+```
