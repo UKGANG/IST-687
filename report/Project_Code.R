@@ -89,7 +89,6 @@ strategy.meanStrategy <- function(ds) {
 
 strategy.modeStrategy <- function(ds) {
   loginfo("Displace all NAs with mode. ", logger="");
-  ds <- rawData;
   tmpDs <- naFilter(ds);
   for (columnName in colnames(tmpDs)) {
     if ("freeText" == columnName) {
@@ -129,8 +128,10 @@ strategy.omitStrategy <- function(ds) {
 }
 
 strategy.winsorizeStrategy <- function(ds) {
-  lowerFencePercentile <- ifelse(exists("strategy.winsorizeStrategy.lowerFencePercentile"), strategy.winsorizeStrategy.lowerFencePercentile, .02);
-  upperFencePercentile <- ifelse(exists("strategy.winsorizeStrategy.upperFencePercentile"), strategy.winsorizeStrategy.upperFencePercentile, .98);
+  lowerFencePercentile <- ifelse(exists("strategy.winsorizeStrategy.lowerFencePercentile")
+                                 , strategy.winsorizeStrategy.lowerFencePercentile, .02);
+  upperFencePercentile <- ifelse(exists("strategy.winsorizeStrategy.upperFencePercentile")
+                                 , strategy.winsorizeStrategy.upperFencePercentile, .98);
   loginfo("Winsorize outliers. ", logger="");
   installLibrary("DescTools");
   for (i in 1:length(colnames(ds))) {
