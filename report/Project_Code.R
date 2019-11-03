@@ -186,11 +186,12 @@ loginfo("Data type conversion complete. ", logger="");
 
 strategy.winsorizeStrategy.lowerFencePercentile <- 0.01
 strategy.winsorizeStrategy.upperFencePercentile <- 0.98
-# NA values handling
+# 2. NA values handling
 rawData <- na.handler(rawData, strategy = strategy.medianStrategy); 
-# Outliers handling
+# 3. Outliers handling
 rawData <- na.handler(rawData, strategy = strategy.winsorizeStrategy);
 
+# 4. Renaming
 originColNames <- colnames(rawData);
 rawData <- rawData %>% mutate(
   # Geographic information
@@ -237,10 +238,11 @@ rawData <- rawData %>% mutate(
   Flight.Recommend.Likelihood=Likelihood.to.recommend,
   Flight.freeText=freeText
 ) %>% select(-originColNames);
-loginfo("Data renaming complete. ", logger="");
 
 convert(rawData, c("Geom.Arrival.City.Abbr", "Geom.Depature.City.Abbr"), as.factor);
 loginfo("Factor column converted for [Geom.Arrival.City.Abbr] and [Geom.Depature.City.Abbr]. ", logger="");
+
+loginfo("Data renaming complete. ", logger="");
 
 View(rawData);
 loginfo("Data wrangling finished! ", logger="")
