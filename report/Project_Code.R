@@ -193,16 +193,16 @@ rawData <- na.handler(rawData, strategy = strategy.winsorizeStrategy);
 originColNames <- colnames(rawData);
 rawData <- rawData %>% mutate(
   # Geographic information
-  Geom.Depature.Airport.Longitude=olong, 
-  Geom.Depature.Airport.Latitude=olat,
   Geom.Arrival.Airport.Longitude=dlong,
   Geom.Arrival.Airport.Latitude=dlat,
-  Geom.Depature.State=Origin.State,
   Geom.Arrival.State=Destination.State,
-  Geom.Depature.City.Label=trimws(str_split(Destination.City, ",")[1], which= "both"),
-  Geom.Depature.City.Abbr=trimws(str_split(Destination.City, ",")[2], which= "both"),
   Geom.Arrival.City.Label=trimws(str_split(Origin.City, ",")[1], which= "both"),
   Geom.Arrival.City.Abbr=trimws(str_split(Origin.City, ",")[2], which= "both"),
+  Geom.Depature.Airport.Longitude=olong, 
+  Geom.Depature.Airport.Latitude=olat,
+  Geom.Depature.State=Origin.State,
+  Geom.Depature.City.Label=trimws(str_split(Destination.City, ",")[1], which= "both"),
+  Geom.Depature.City.Abbr=trimws(str_split(Destination.City, ",")[2], which= "both"),
   
   # Personal information
   Person.Age=Age,
