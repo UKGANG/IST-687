@@ -198,12 +198,13 @@ rawData <- rawData %>% mutate(
   Geom.Arrival.Airport.Latitude=dlat,
   Geom.Arrival.State=Destination.State,
   Geom.Arrival.City.Label=trimws(str_split(Origin.City, ",")[1], which= "both"),
-  Geom.Arrival.City.Abbr=trimws(str_split(Origin.City, ",")[2], which= "both"),
+  Geom.Arrival.City.Label=trimws(str_split(Origin.City, ",", simplify = T)[,1], which= "both"),
+  Geom.Arrival.City.Abbr=trimws(str_split(Origin.City, ",", simplify = T)[,2], which= "both"),
   Geom.Depature.Airport.Longitude=olong, 
   Geom.Depature.Airport.Latitude=olat,
   Geom.Depature.State=Origin.State,
-  Geom.Depature.City.Label=trimws(str_split(Destination.City, ",")[1], which= "both"),
-  Geom.Depature.City.Abbr=trimws(str_split(Destination.City, ",")[2], which= "both"),
+  Geom.Depature.City.Label=trimws(str_split(Destination.City, ",", simplify = T)[,1], which= "both"),
+  Geom.Depature.City.Abbr=trimws(str_split(Destination.City, ",", simplify = T)[,2], which= "both"),
   
   # Personal information
   Person.Age=Age,
@@ -235,9 +236,11 @@ rawData <- rawData %>% mutate(
   Flight.Ticket.Partner.Name=Partner.Name,
   Flight.Recommend.Likelihood=Likelihood.to.recommend,
   Flight.freeText=freeText
-);
-rawData <- select(rawData, -originColNames)
+) %>% select(-originColNames);
 loginfo("Data renaming complete. ", logger="");
+
+convert(rawData, c("Geom.Arrival.City.Abbr", "Geom.Depature.City.Abbr"), as.factor);
+loginfo("Factor column converted for [Geom.Arrival.City.Abbr] and [Geom.Depature.City.Abbr]. ", logger="");
 
 View(rawData);
 loginfo("Data wrangling finished! ", logger="")
