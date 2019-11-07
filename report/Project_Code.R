@@ -235,8 +235,10 @@ rawData <- rawData %>% mutate(
   # Miscellaneous
   Flight.Ticket.Partner.Code=Partner.Code,
   Flight.Ticket.Partner.Name=Partner.Name,
-  Flight.Recommend.Likelihood=Likelihood.to.recommend,
-  Flight.freeText=freeText
+  Flight.freeText=freeText,
+
+  # Dependent variable
+  Recommend.Likelihood=Likelihood.to.recommend
 ) %>% select(-originColNames);
 
 convert(rawData, c("Geom.Arrival.City.Abbr", "Geom.Depature.City.Abbr"), as.factor);
