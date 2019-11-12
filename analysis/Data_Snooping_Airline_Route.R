@@ -4,11 +4,12 @@ installLibrary("ggmap")
 installLibrary("sqldf")
 
 airlineRoute <- rawData %>% 
-  select(c("Geom.Depature.Airport.Latitude"
-           , "Geom.Depature.Airport.Longitude"
-           , "Geom.Arrival.Airport.Latitude"
+  select(c("Geom.Depature.Airport.Latitude" 
+           , "Geom.Depature.Airport.Longitude" 
+           , "Geom.Arrival.Airport.Latitude" 
            , "Geom.Arrival.Airport.Longitude")) %>% 
-  distinct()
+  distinct() 
+
 tmpAirlineRoute <- airlineRoute
 colnames(tmpAirlineRoute) <- c("dLat", "dLong", "aLat", "aLong")
 sqldf("SELECT DISTINCT dLat, dLong, aLat, aLong FROM tmpAirlineRoute")
@@ -23,9 +24,10 @@ ggplot(tmp) +
                  , colour = "curve"), curvature = -0.2)
 
 for (i in 1:1928) {
-  ggplot(airlineRoute) + 
-    geom_curve(aes(x = Geom.Depature.Airport.Latitude[i], y = Geom.Depature.Airport.Longitude[i]
-                   , xend = Geom.Arrival.Airport.Latitude[i], yend = Geom.Arrival.Airport.Longitude[i]
+  
+  ggplot(airlineRoute[1:1097,]) + 
+    geom_curve(aes(x = Geom.Depature.Airport.Latitude, y = Geom.Depature.Airport.Longitude
+                   , xend = Geom.Arrival.Airport.Latitude, yend = Geom.Arrival.Airport.Longitude
                    , colour = "curve"), curvature = -0.2)
 }
 ggplot(airlineRoute) + 
