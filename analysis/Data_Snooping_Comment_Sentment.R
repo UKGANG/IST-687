@@ -21,7 +21,7 @@ countSentmentWords <- function(dataset, corpusDataset) {
 installLibrary("tm")
 installLibrary("tidyverse")
 
-rawData$Flight.freeText %>% 
+wordTable <- rawData$Flight.freeText %>% 
   na.omit() %>% 
   VectorSource() %>% 
   Corpus() %>% 
@@ -31,8 +31,8 @@ rawData$Flight.freeText %>%
   tm_map(removeWords, stopwords("english")) %>% 
   TermDocumentMatrix()
 
-posCnt <- countSentments(wordTable, p)
-negCnt <- countSentments(wordTable, n)
+posCnt <- countSentmentWords(wordTable, p)
+negCnt <- countSentmentWords(wordTable, n)
 sentmentAnalyticResult <- c(posCnt, negCnt)
 sentmentAnalyticResult <- data.frame(count=sentmentAnalyticResult)
 rownames(sentmentAnalyticResult) <- c("Positive Word", "Negative Word")
