@@ -1,8 +1,8 @@
 source("https://raw.githubusercontent.com/UKGANG/IST-687/master/report/Project_Code.R", echo=FALSE)
 
 # Prepare for sentenment dictionaries
-pos <- "~/Desktop/classes/IST/687/assessment/week11/opinion-lexicon-English/positive-words.txt"
-neg <- "~/Desktop/classes/IST/687/assessment/week11/opinion-lexicon-English/negative-words.txt"
+pos <- "https://raw.githubusercontent.com/UKGANG/IST-687/master/analysis/positive-words.txt"
+neg <- "https://raw.githubusercontent.com/UKGANG/IST-687/master/analysis/negative-words.txt"
 p <- scan(pos, character(0), sep = "\n")
 n <- scan(neg, character(0), sep = "\n")
 p <- p[-1:-34]
