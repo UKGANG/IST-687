@@ -198,14 +198,13 @@ rawData <- rawData %>% mutate(
   Geom.Arrival.Airport.Longitude=dlong,
   Geom.Arrival.Airport.Latitude=dlat,
   Geom.Arrival.State=Destination.State,
-  Geom.Arrival.City.Label=trimws(str_split(Origin.City, ",")[1], which= "both"),
-  Geom.Arrival.City.Label=trimws(str_split(Origin.City, ",", simplify = T)[,1], which= "both"),
-  Geom.Arrival.City.Abbr=trimws(str_split(Origin.City, ",", simplify = T)[,2], which= "both"),
+  Geom.Arrival.City.Label=trimws(str_split(Destination.City, ",", simplify = T)[,1], which= "both"),
+  Geom.Arrival.City.Abbr=trimws(str_split(Destination.City, ",", simplify = T)[,2], which= "both"),
   Geom.Depature.Airport.Longitude=olong, 
   Geom.Depature.Airport.Latitude=olat,
   Geom.Depature.State=Origin.State,
-  Geom.Depature.City.Label=trimws(str_split(Destination.City, ",", simplify = T)[,1], which= "both"),
-  Geom.Depature.City.Abbr=trimws(str_split(Destination.City, ",", simplify = T)[,2], which= "both"),
+  Geom.Depature.City.Label=trimws(str_split(Origin.City, ",", simplify = T)[,1], which= "both"),
+  Geom.Depature.City.Abbr=trimws(str_split(Origin.City, ",", simplify = T)[,2], which= "both"),
   
   # Personal information
   Person.Age=Age,
