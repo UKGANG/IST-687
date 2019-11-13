@@ -15,7 +15,7 @@ basicConfig();
 logReset()
 addHandler(writeToConsole)
 loginfo("initializing...");
-if (!is.null(echo) & !echo) {
+if (exists("echo") && !echo) {
   removeHandler("writeToConsole")
 }
 
