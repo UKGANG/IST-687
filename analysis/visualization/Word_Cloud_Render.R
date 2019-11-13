@@ -1,4 +1,4 @@
-source("https://raw.githubusercontent.com/UKGANG/IST-687/master/report/Project_Code.R", echo=FALSE)
+source("https://raw.githubusercontent.com/UKGANG/IST-687/master/mungling/Data_Cleaner.R")
 
 View(rawData)
 rawData$commented <- as.numeric(!is.na(rawData$Flight.freeText))

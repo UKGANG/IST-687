@@ -1,4 +1,4 @@
-source("https://raw.githubusercontent.com/UKGANG/IST-687/master/analysis/dataSnooping/Map_Render.R")
+source("https://raw.githubusercontent.com/UKGANG/IST-687/master/analysis/visualization/Map_Render.R")
 
 flightRouteRender <- function() {
   return (geom_curve(data = airlineRoute, aes(x = Geom.Departure.Airport.Longitude, xend = Geom.Arrival.Airport.Longitude
