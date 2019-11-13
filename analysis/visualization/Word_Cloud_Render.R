@@ -1,10 +1,8 @@
 source("https://raw.githubusercontent.com/UKGANG/IST-687/master/mungling/Data_Cleaner.R")
 
-View(rawData)
 rawData$commented <- as.numeric(!is.na(rawData$Flight.freeText))
 comments <- na.omit(rawData$Flight.freeText)
 
-View(comments)
 installLibrary("tm")
 installLibrary("tidyverse")
 tdMatrix <- comments %>% 
@@ -34,7 +32,6 @@ head(criticalWords)
 installLibrary("ggplot")
 installLibrary("wordcloud")
 criticalCloudFrame <- data.frame(word = criticalWords, freq = criticalWordCounts)
-View(criticalCloudFrame)
 ggplot(data = criticalCloudFrame) + 
   aes(x=reorder(word, freq), y=freq) + 
   geom_point() + 
