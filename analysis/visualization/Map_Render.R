@@ -1,25 +1,10 @@
-echo = F
-source("https://raw.githubusercontent.com/UKGANG/IST-687/master/mungling/Data_Cleaner.R")
-renderFlightInformation <- function(layerRenders) {
-  installLibrary("tidyverse")
-  installLibrary("ggplot")
+source("https://raw.githubusercontent.com/UKGANG/IST-687/master/analysis/visualization/Base_Map_Render.R")
+source("https://raw.githubusercontent.com/UKGANG/IST-687/master/analysis/visualization/Airline_Route_Module.R")
+source("https://raw.githubusercontent.com/UKGANG/IST-687/master/analysis/visualization/City_Frequency_Module.R")
 
-  pic <- map_data("world") %>% 
-    filter(`region` != "Antarctica") %>% 
-    ggplot(aes(long, lat, group = group)) + 
-    geom_polygon(fill="gray17", color = "white", size=0.15) 
-  funcs <- layerRenders
-  if (!is.na(funcs) & !is.vector(funcs)) {
-    funcs = c(funcs)
-  }
-  for (func in funcs) {
-    pic <- pic + func()
-  }
-  pic <- pic + scale_size_manual(values = c(0.05, 0.01) ) + 
-    theme_void() + 
-    theme(plot.background=element_rect(fill="gray12"), legend.position="none") + 
-    coord_sf(xlim=c(-180,-65), ylim=c(10,72))
-  
-  # Plot
-  pic
-}
+map.render.zoom.x=c(-180,-65)
+map.render.zoom.y=c(10,72)
+map.render.alpha = 0.19
+map.render.size = 1.7 
+
+renderFlightInformation(c(flightRouteRender, cityFrequencyRender))

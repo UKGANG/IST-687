@@ -11,7 +11,7 @@ tdMatrix <- comments %>%
   tm_map(content_transformer(tolower)) %>% 
   tm_map(removePunctuation) %>% 
   tm_map(removeNumbers) %>% 
-  tm_map(removeWords, stopwords("english")) %>% 
+  tm_map(removeWords, c(stopwords("english"), 'flight')) %>% 
   TermDocumentMatrix()
 
 inspect(tdMatrix)
@@ -21,7 +21,7 @@ wordCounts <- tdMatrix %>%
   as.matrix() %>% 
   rowSums() %>% 
   sort(decreasing = T)
-criticalWordCounts <- wordCounts[which(wordCounts > quantile(wordCounts, c(0.99))[[1]])]
+criticalWordCounts <- wordCounts[which(wordCounts > quantile(wordCounts, c(0.95))[[1]])]
 head(criticalWordCounts)
 
 # Get the actual words
@@ -37,6 +37,6 @@ ggplot(data = criticalCloudFrame) +
   geom_point() + 
   theme(axis.text.x=element_text(angle=90, hjust=1))
 
-set.seed(777)
-str(wordcloud(criticalCloudFrame$word, criticalCloudFrame$freq, colors = brewer.pal(8, "Dark2")))
+set.seed(90)
+wordcloud(criticalCloudFrame$word, criticalCloudFrame$freq, rot.per = 0.35, colors = brewer.pal(8, "Dark2"))
 View(criticalCloudFrame)
