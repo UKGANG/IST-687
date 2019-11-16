@@ -8,3 +8,5 @@ map.render.alpha = 0.19
 map.render.size = 1.7 
 
 renderFlightInformation(c(flightRouteRender, cityFrequencyRender))
+
+renderFlightInformation(c(flightRouteRender, cityFrequencyRender))
