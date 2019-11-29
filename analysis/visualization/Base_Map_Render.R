@@ -1,6 +1,6 @@
 echo = F
 source("https://raw.githubusercontent.com/UKGANG/IST-687/master/mungling/Data_Cleaner.R")
-renderFlightInformation <- function(layerRenders=NA) {
+renderFlightInformation <- function(dataFilter=function(data) {return (data);}, layerRenders=NA) {
   installLibrary("tidyverse")
   installLibrary("ggplot2")
 
@@ -25,7 +25,7 @@ renderFlightInformation <- function(layerRenders=NA) {
       funcs = c(funcs)
     }
     for (func in funcs) {
-      pic <- pic + func()
+      pic <- pic + func(dataFilter)
     }
   }
   pic <- pic + scale_size_manual(values = c(0.05, 0.01) ) + 

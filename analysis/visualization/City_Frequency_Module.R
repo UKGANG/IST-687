@@ -1,7 +1,8 @@
-cityFrequencyRender <- function() {
+cityFrequencyRender <- function(dataFilter) {
   map.render.size.default <- 2
   size <- ifelse(exists("map.render.size"), map.render.size, map.render.size.default)
   airlineRoute <- rawData %>% 
+    dataFilter() %>%
     select(c(
       "Geom.Arrival.Airport.Longitude"
       , "Geom.Arrival.Airport.Latitude"

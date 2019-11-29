@@ -8,4 +8,11 @@ map.render.zoom.y=c(14,64)
 map.render.alpha = 0.19
 map.render.size = 1.7 
 
-renderFlightInformation(c(flightRouteRender, cityFrequencyRender))
+unique(rawData$Flight.Ticket.Partner.Name)
+unique(rawData$Flight.Ticket.Partner.Code)
+
+partnetFilter <- function(data) {
+    return (filter(data, Flight.Ticket.Partner.Code == "US"));
+}
+
+renderFlightInformation(partnerFilter, c(flightRouteRender, cityFrequencyRender))

@@ -1,7 +1,8 @@
-flightRouteRender <- function() {
+flightRouteRender <- function(dataFilter) {
   map.render.alpha.default <- 0.39
   flightRouteRender.alpha <- ifelse(exists("map.render.alpha"), map.render.alpha, map.render.alpha.default)
   airlineRoute <- rawData %>% 
+    dataFilter() %>%
     select(c(
       "Geom.Arrival.Airport.Longitude"
       , "Geom.Arrival.Airport.Latitude"
