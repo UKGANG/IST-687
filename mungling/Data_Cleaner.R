@@ -135,28 +135,29 @@ strategy.omitStrategy <- function(ds) {
   return (na.omit(ds));
 }
 
-strategy.winsorizeStrategy <- function(ds) {
+strategy.winsorizeStrategy <- function(ds, vectors=colnames(ds)) {
+  #ectors <- nameVectors
   lowerFencePercentile <- ifelse(exists("strategy.winsorizeStrategy.lowerFencePercentile")
                                  , strategy.winsorizeStrategy.lowerFencePercentile, .02);
   upperFencePercentile <- ifelse(exists("strategy.winsorizeStrategy.upperFencePercentile")
                                  , strategy.winsorizeStrategy.upperFencePercentile, .98);
   loginfo("Winsorize outliers. ");
   installLibrary("DescTools");
-  for (i in 1:length(colnames(ds))) {
-    dataType <- class(ds[[i]]);
+  for (i in vectors) {
+    dataType <- class(ds[, i]);
     if (!dataType %in% c("integer", "numeric")) {
       next;
     }
-    lowerFence <- quantile(ds[[i]], lowerFencePercentile);
-    upperFence <-quantile(ds[[i]], upperFencePercentile);
+    lowerFence <- quantile(ds[, i], lowerFencePercentile);
+    upperFence <-quantile(ds[, i], upperFencePercentile);
     if ("integer" == dataType) {
       lowerFence <- round(lowerFence);
       upperFence <- round(upperFence);
     }
-    loginfo(sprintf("Winsorizing for column: %s", colnames(ds)[i]));
+    loginfo(sprintf("Winsorizing for column: %s", i));
     loginfo(sprintf("Lower fence: %.3f, percentile: %.3f", lowerFence, lowerFencePercentile));
     loginfo(sprintf("Upper fence: %.3f, percentile: %.3f", upperFence, upperFencePercentile));
-    ds[i] <- Winsorize(ds[i]
+    ds[i] <- Winsorize(ds[, i]
                        , minval = lowerFence
                        , maxval = upperFence
                        , probs = c(lowerFencePercentile, upperFencePercentile)
