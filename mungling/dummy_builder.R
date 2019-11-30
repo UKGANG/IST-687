@@ -1,4 +1,3 @@
-echo = F
 source("https://raw.githubusercontent.com/UKGANG/IST-687/master/mungling/Data_Cleaner.R")
 installLibrary("fastDummies")
 installLibrary("lubridate")
