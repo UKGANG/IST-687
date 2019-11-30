@@ -1,4 +1,5 @@
 # Utilities
+'%!in%' <- function(x,y)!('%in%'(x,y))
 installLibrary <- function(libraryName) {
   # Install package if not exists
   if (!require(libraryName, character.only = TRUE)) {
@@ -231,7 +232,7 @@ rawData <- rawData %>% mutate(
   Flight.Departure.Scheduled.Hour=Scheduled.Departure.Hour,
   Flight.Arrival.Delay.Minute=Arrival.Delay.in.Minutes,
   Flight.Time.Minutes=Flight.time.in.minutes,
-  Flight.Distance=Flight.Distance,
+  Flight.Distance.Cnt=Flight.Distance,
   Flight.Date=Flight.date,
   Flight.Cancelled=Flight.cancelled,
   
