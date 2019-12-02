@@ -256,7 +256,12 @@ rawData <- rawData %>% mutate(
 convert(rawData, c("Geom.Arrival.State.Abbr", "Geom.Departure.State.Abbr"), as.factor);
 loginfo("Factor column converted for [Geom.Arrival.State.Abbr] and [Geom.Departure.State.Abbr]. ");
 
+trainList <- createDataPartition(y=rawData, p=.67, list=F)
+
+trainSet <- subCredit[trainList,]
+testSet <- subCredit[-trainList,]
+
 loginfo("Data renaming complete. ");
 
-View(rawData);
+# View(rawData);
 loginfo("Data wrangling finished! ")
