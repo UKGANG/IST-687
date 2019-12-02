@@ -11,6 +11,7 @@ installLibrary("logging");
 installLibrary("RCurl");
 installLibrary("tidyverse");
 installLibrary("jsonlite");
+installLibrary("caret")
 
 basicConfig();
 logReset()
