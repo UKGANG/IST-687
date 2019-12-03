@@ -254,6 +254,8 @@ rawData <- rawData %>% mutate(
   Recommend.Likelihood=Likelihood.to.recommend
 ) %>% select(-originColNames);
 
+# rawData <- filter(rawData, Flight.Ticket.Partner.Code %!in% c("OO"))
+
 convert(rawData, c("Geom.Arrival.State.Abbr", "Geom.Departure.State.Abbr"), as.factor);
 loginfo("Factor column converted for [Geom.Arrival.State.Abbr] and [Geom.Departure.State.Abbr]. ");
 

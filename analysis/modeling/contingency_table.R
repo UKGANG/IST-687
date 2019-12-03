@@ -3,6 +3,11 @@ source("https://raw.githubusercontent.com/UKGANG/IST-687/master/mungling/Data_Cl
 installLibrary("rattle")
 installLibrary("rpart.plot")
 installLibrary("RColorBrewer")
+trainList <- createDataPartition(y=rawData$Recommend.Likelihood, p=.67, list=F)
+unique(rawData$Flight.Cancelled)
+
+trainSet <- rawData[trainList,]
+testSet <- rawData[-trainList,]
 categorizedTable <- rawData %>% 
   group_by(Flight.Travel.Type, Flight.Cabin.Class, Flight.Airline.Membership.Class) %>% 
   summarize(
