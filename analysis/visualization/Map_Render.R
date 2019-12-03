@@ -5,14 +5,38 @@ source("https://raw.githubusercontent.com/UKGANG/IST-687/master/analysis/visuali
 # Map render configuration
 map.render.zoom.x=c(-160,-65)
 map.render.zoom.y=c(14,64)
-map.render.alpha = 0.19
+map.render.alpha = 0.39
 map.render.size = 1.7 
 
-unique(rawData$Flight.Ticket.Partner.Name)
-unique(rawData$Flight.Ticket.Partner.Code)
+airlineCnt <- rawData %>% 
+  add_count(Flight.Ticket.Partner.Code) %>% 
+  select(Flight.Ticket.Partner.Name, Flight.Ticket.Partner.Code ,n) %>% 
+  distinct() %>% 
+  arrange(desc(n));
+airlineCnt;
 
-partnetFilter <- function(data) {
-    return (filter(data, Flight.Ticket.Partner.Code == "US"));
+airlineCnt %>% 
+  select(Flight.Ticket.Partner.Code)
+
+partnerFilter <- function(data) {
+    return (filter(data, Flight.Ticket.Partner.Code %in% c(""
+                                                           # , "WN" 
+                                                           # , "DL" 
+                                                           # , "OO" 
+                                                           # , "EV" 
+                                                           # , "OU" 
+                                                            , "US" 
+                                                           # , "AA" 
+                                                           # , "MQ" 
+                                                           # , "B6" 
+                                                           # , "AS" 
+                                                           # , "FL" 
+                                                           # , "F9" 
+                                                           # , "VX" 
+                                                           # , "HA" 
+                                                           )));
 }
 
-renderFlightInformation(partnerFilter, c(flightRouteRender, cityFrequencyRender))
+renderFlightInformation(
+  partnerFilter, 
+  layerRenders =c(flightRouteRender, cityFrequencyRender))

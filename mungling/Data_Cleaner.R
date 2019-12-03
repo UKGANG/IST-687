@@ -257,11 +257,6 @@ rawData <- rawData %>% mutate(
 convert(rawData, c("Geom.Arrival.State.Abbr", "Geom.Departure.State.Abbr"), as.factor);
 loginfo("Factor column converted for [Geom.Arrival.State.Abbr] and [Geom.Departure.State.Abbr]. ");
 
-trainList <- createDataPartition(y=rawData$Recommend.Likelihood, p=.67, list=F)
-
-trainSet <- rawData[trainList,]
-testSet <- rawData[-trainList,]
-
 loginfo("Data renaming complete. ");
 
 # View(rawData);
