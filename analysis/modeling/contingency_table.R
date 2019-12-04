@@ -37,9 +37,9 @@ rpartExp <- Recommend.Likelihood ~
   Person.Total.Freq.Flyer.Accts + 
   
   # Current Flight timing information
-  # Flight.Departure.Delay.Minute +
-  # Flight.Departure.Scheduled.Hour +
-  # Flight.Arrival.Delay.Minute +
+  Flight.Departure.Delay.Minute +
+  Flight.Departure.Scheduled.Hour +
+  Flight.Arrival.Delay.Minute +
   # Flight.Time.Minutes +
   # Flight.Distance.Cnt +
   # Flight.Date +
@@ -47,7 +47,7 @@ rpartExp <- Recommend.Likelihood ~
   # 
   # Cost Related Information
   Flight.Airport.Shopping.Amount +
-  Flight.Airport.Food.Amount +
+  # Flight.Airport.Food.Amount +
   Flight.Airline.Membership.Class +
   Flight.Travel.Type +
   Flight.Cabin.Class +
@@ -56,6 +56,7 @@ rpartExp <- Recommend.Likelihood ~
   # Flight.Ticket.Partner.Code + 
   Flight.Ticket.Partner.Name 
 
+# scoreTree <- rpart(rpartExp, data=filter(trainSet, Flight.Travel.Type == "Personal Travel"), method="class") 
 scoreTree <- rpart(rpartExp, data=trainSet, method="class") 
 
 fancyRpartPlot(scoreTree)
