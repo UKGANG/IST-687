@@ -1,6 +1,10 @@
 echo=F
 source("https://raw.githubusercontent.com/UKGANG/IST-687/master/mungling/dummy_builder.R")
 
+partnerFilter <- function(data, type) {
+  return (filter(data, Flight.Ticket.Partner.Code %in% type));
+}
+
 nameVectors <- c("Person.Flights.Per.Year"
                  , "Person.Total.Freq.Flyer.Accts"
                  , "Flight.Distance.Cnt"
@@ -38,42 +42,41 @@ rawData$Flight.Travel.Type_Personal_Travel <- rawData[,"Flight.Travel.Type_Perso
 rawData$Flight.Travel.Type_Mileage_tickets <- rawData[,"Flight.Travel.Type_Mileage tickets"]
 rawData$Flight.Cancelled <- as.numeric(ifelse(rawData$Flight.Cancelled =="Yes" | rawData$Flight.Cancelled == 1, 1, 0))
 rawData$Flight.Departure.Delay <- as.numeric(rawData$Flight.Departure.Delay.Minute > 0)
+
+type <- c(""
+          , "WN"
+          , "DL"
+          # , "OO"
+          , "EV"
+          , "OU"
+          , "US"
+          , "AA"
+          , "MQ"
+          , "B6"
+          , "AS"
+          , "FL"
+          , "F9"
+          , "VX"
+          , "HA"
+);
+
+rawData <- partnerFilter(rawData, type)
 trainList <- createDataPartition(y=rawData$Recommend.Likelihood, p=.67, list=F)
-unique(rawData$Flight.Cancelled)
 
 trainSet <- rawData[trainList,]
 testSet <- rawData[-trainList,]
 modelData <- trainSet
 
-partnerFilter <- function(data, type) {
-  return (filter(data, Flight.Ticket.Partner.Code %in% type));
-}
-type <- c(""
-          , "WN"
-          # , "DL" 
-          , "OO"
-          # , "EV" 
-          # , "OU" 
-          # , "US" 
-          # , "AA" 
-          # , "MQ" 
-          # , "B6" 
-          # , "AS" 
-          # , "FL" 
-          # , "F9" 
-          # , "VX" 
-          # , "HA" 
-);
 View(rawData)
 
-modelData <- partnerFilter(rawData, type)
+modelData <- trainSet
 model <- lm(formula = Recommend.Likelihood~
-              # Monday +
-              # Tuesday +
-              # Wednesday +
-              # Thursday +
-              # Friday +
-              # Saturday +
+              Monday +
+              Tuesday +
+              Wednesday +
+              Thursday +
+              Friday +
+              Saturday +
               Sunday +
               Person.Age +
               Person.Gender_Female + 
@@ -87,11 +90,11 @@ model <- lm(formula = Recommend.Likelihood~
               Flight.Arrival.Delay.Minute +
               Flight.Time.Minutes +
               Flight.Distance.Cnt +
-              # Flight.Cancelled +
+              Flight.Cancelled +
               
               Flight.Airport.Shopping.Amount + 
               Flight.Airport.Food.Amount + 
-              # Flight.Airline.Membership.Class_Blue + 
+              Flight.Airline.Membership.Class_Blue +
               Flight.Airline.Membership.Class_Silver + 
               Flight.Airline.Membership.Class_Gold + 
               Flight.Travel.Type_Personal_Travel +
@@ -100,18 +103,6 @@ model <- lm(formula = Recommend.Likelihood~
               Flight.Cabin.Class_Eco +  
               Flight.Cabin.Class_Eco_Plus + 
 
-              Flight.Airline.Membership.Class_Blue * Person.Price.Sensitivity + 
-              Flight.Airline.Membership.Class_Blue * Person.Loyalty + 
-              Flight.Airline.Membership.Class_Blue * Flight.Airport.Shopping.Amount + 
-              
-              Person.Loyalty * Flight.Travel.Type_Personal_Travel + 
-              Person.Loyalty * Flight.Travel.Type_Mileage_tickets + 
-              # Flight.Travel.Type_Personal_Travel * Flight.Airport.Shopping.Amount + 
-              
-              Flight.Airline.Membership.Class_Silver * Flight.Airport.Food.Amount + 
-              # Flight.Distance.Cnt * Flight.Cancelled + 
-              Flight.Airport.Food.Amount * Flight.Departure.Delay + 
-              Flight.Departure.Delay * Flight.Travel.Type_Personal_Travel +
-              Flight.Cabin.Class_Eco_Plus * Flight.Airport.Shopping.Amount
+              Flight.Ticket.Partner.Code 
             , data = modelData)
 summary(model)
